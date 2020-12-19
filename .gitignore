@@ -1,0 +1,8 @@
+# Project exclude paths
+/bio/target/
+/netty/target/
+/nio/target/
+/rmi-service/target/
+/rpc-common/target/
+/rpc-consumer/target/
+/rpc-provider/target/

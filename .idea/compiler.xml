@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="rim-client" />
+        <module name="bio" />
+        <module name="rpc-provider" />
+        <module name="netty" />
+        <module name="rpc-common" />
+        <module name="rpc-consumer" />
+        <module name="nio" />
+        <module name="rmi-service" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="11">
+      <module name="bio" target="11" />
+      <module name="netty" target="11" />
+      <module name="nio" target="11" />
+      <module name="rim-client" target="11" />
+      <module name="rmi-service" target="11" />
+      <module name="rpc-common" target="11" />
+      <module name="rpc-consumer" target="11" />
+      <module name="rpc-provider" target="11" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
