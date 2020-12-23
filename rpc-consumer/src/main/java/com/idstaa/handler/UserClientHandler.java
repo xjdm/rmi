@@ -1,5 +1,6 @@
 package com.idstaa.handler;
 
+import com.idstaa.service.RpcRequest;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
@@ -16,7 +17,9 @@ public class UserClientHandler extends ChannelInboundHandlerAdapter implements C
 
     private String result; // 记录服务器返回的数据
 
-    private String param;// 记录将要返给服务器的数据
+    private String param;// 记录将要返给服务器的数据 UserService#sayHello#
+
+    private Object rpcRequestParam;
 
     // 2、实现channelActive 客户端和服务器连接是，该方法自动执行
 
@@ -38,7 +41,7 @@ public class UserClientHandler extends ChannelInboundHandlerAdapter implements C
     // 4、将客户端的数写到服务器
     public synchronized Object call() throws Exception {
         // context给服务器写数据
-        context.writeAndFlush(param);
+        context.writeAndFlush(rpcRequestParam);
         wait();
         return result;
     }
@@ -46,5 +49,10 @@ public class UserClientHandler extends ChannelInboundHandlerAdapter implements C
     // 5、设置参数的方法
     public void setParam(String param) {
         this.param = param;
+    }
+
+    // 5、设置参数的方法
+    public void setParam(Object rpcRequestParam) {
+        this.rpcRequestParam = rpcRequestParam;
     }
 }

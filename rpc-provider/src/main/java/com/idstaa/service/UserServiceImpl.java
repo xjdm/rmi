@@ -9,15 +9,17 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import org.springframework.stereotype.Service;
 
 /**
  * @author chenjie
  * @date 2020/12/18 16:21
  */
+@Service
 public class UserServiceImpl implements IUserService{
     public String sayHello(String msg) {
-        System.out.println("are your ok ?"+ msg);
-        return "are you ok ?" + msg;
+        System.out.println("调用成功-- 参数"+ msg);
+        return "调用成功-- 参数" + msg;
     }
 
     public static void startServer(String ip,int port) throws InterruptedException {
@@ -37,7 +39,7 @@ public class UserServiceImpl implements IUserService{
                     protected void initChannel(SocketChannel nioServerSocketChannel) throws Exception {
                         ChannelPipeline pipeline = nioServerSocketChannel.pipeline();
                         pipeline.addLast(new StringEncoder());
-                        pipeline.addLast(new StringDecoder());
+                        pipeline.addLast(new RpcDecoder(RpcRequest.class,new JsonSerializer()));
                         pipeline.addLast(new UserServiceHandler());
                     }
                 });

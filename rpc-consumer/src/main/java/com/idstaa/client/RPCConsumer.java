@@ -1,6 +1,9 @@
 package com.idstaa.client;
 
 import com.idstaa.handler.UserClientHandler;
+import com.idstaa.service.JsonSerializer;
+import com.idstaa.service.RpcEncoder;
+import com.idstaa.service.RpcRequest;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -14,6 +17,7 @@ import io.netty.handler.codec.string.StringEncoder;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -50,7 +54,7 @@ public class RPCConsumer {
                         // 1、获取ChannelPipeline
                         ChannelPipeline pipeline = socketChannel.pipeline();
                         // 设置编码
-                        pipeline.addLast(new StringEncoder());
+                        pipeline.addLast(new RpcEncoder(RpcRequest.class,new JsonSerializer()));
                         pipeline.addLast(new StringDecoder());
                         // 添加自定义事件处理器
                         pipeline.addLast(userClientHandler);
@@ -61,8 +65,8 @@ public class RPCConsumer {
     }
 
     // 4、编写一个方法，使用JDK的动态代理创建对象
-    // serviceClass 接口类型，根据那个接口生成子类代理对象 ； providerParam ：“UserServiceImpl”
-    public static Object createProxy(Class<?> serviceClass, final String providerParam){
+    // serviceClass 接口类型，根据那个接口生成子类代理对象 ； providerParam ：“UserService#sayHello#”
+    public static Object createProxy(Class<?> serviceClass){
         return Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
                 new Class[]{serviceClass}, new InvocationHandler() {
                     public Object invoke(Object objects, Method method, Object[] args) throws Throwable {
@@ -71,7 +75,26 @@ public class RPCConsumer {
                             initClient();
                         }
                         // 2)给UserClientHandler 设置param参数
-                        userClientHandler.setParam(providerParam + args[0]);
+                      /*  userClientHandler.setParam(providerParam + args[0]);*/
+                        // 封装
+                        RpcRequest request = new RpcRequest();
+                        String requestId = UUID.randomUUID().toString();
+                        System.out.println(requestId);
+
+                        String className = method.getDeclaringClass().getName();
+                        String methodName = method.getName();
+
+                        Class<?>[] parameterTypes = method.getParameterTypes();
+                        request.setRequestId(requestId);
+                        request.setClassName(className);
+                        request.setMethodName(methodName);
+                        request.setParameterTypes(parameterTypes);
+                        request.setParameters(args);
+
+                        // 设置参数
+                        userClientHandler.setParam(request);
+                        System.out.println(request);
+                        System.out.println("设置参数完成");
 
                         // 3)使用线程池，开启一个线程处理
                         Object result = executorService.submit(userClientHandler).get();
